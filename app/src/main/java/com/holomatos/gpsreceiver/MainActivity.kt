@@ -22,14 +22,16 @@ class MainActivity : AppCompatActivity() {
     private var currentCode: String? = null
 
     // Esri World Imagery satellite tiles (free, no API key required)
-    private val satelliteSource = XYTileSource(
+    private val satelliteSource = object : XYTileSource(
         "EsriWorldImagery", 0, 19, 256, ".jpg",
         arrayOf("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/")
-    ) { mapTileIndex: Long ->
-        val zoom = org.osmdroid.util.MapTileIndex.getZoom(mapTileIndex)
-        val x = org.osmdroid.util.MapTileIndex.getX(mapTileIndex)
-        val y = org.osmdroid.util.MapTileIndex.getY(mapTileIndex)
-        "$zoom/$y/$x"
+    ) {
+        override fun getTileURLString(pMapTileIndex: Long): String {
+            val zoom = org.osmdroid.util.MapTileIndex.getZoom(pMapTileIndex)
+            val x = org.osmdroid.util.MapTileIndex.getX(pMapTileIndex)
+            val y = org.osmdroid.util.MapTileIndex.getY(pMapTileIndex)
+            return "$baseUrl$zoom/$y/$x$mImageFilenameEnding"
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
