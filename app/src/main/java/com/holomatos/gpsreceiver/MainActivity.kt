@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private val satelliteSource = XYTileSource(
         "EsriWorldImagery", 0, 19, 256, ".jpg",
         arrayOf("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/")
-    ) { mapTileIndex ->
+    ) { mapTileIndex: Long ->
         val zoom = org.osmdroid.util.MapTileIndex.getZoom(mapTileIndex)
         val x = org.osmdroid.util.MapTileIndex.getX(mapTileIndex)
         val y = org.osmdroid.util.MapTileIndex.getY(mapTileIndex)
