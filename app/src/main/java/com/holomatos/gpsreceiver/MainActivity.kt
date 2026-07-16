@@ -34,6 +34,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Esri reference layer: city/state/country labels + boundaries, transparent PNG overlay
+    private val labelsSource = object : XYTileSource(
+        "EsriBoundariesPlaces", 0, 19, 256, ".png",
+        arrayOf("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/")
+    ) {
+        override fun getTileURLString(pMapTileIndex: Long): String {
+            val zoom = org.osmdroid.util.MapTileIndex.getZoom(pMapTileIndex)
+            val x = org.osmdroid.util.MapTileIndex.getX(pMapTileIndex)
+            val y = org.osmdroid.util.MapTileIndex.getY(pMapTileIndex)
+            return "$baseUrl$zoom/$y/$x$mImageFilenameEnding"
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Configuration.getInstance().load(
             applicationContext,
@@ -47,6 +60,12 @@ class MainActivity : AppCompatActivity() {
         binding.map.setMultiTouchControls(true)
         binding.map.controller.setZoom(17.0)
         binding.map.controller.setCenter(GeoPoint(0.0, 0.0))
+
+        val labelsProvider = org.osmdroid.tileprovider.MapTileProviderBasic(applicationContext, labelsSource)
+        val labelsOverlay = org.osmdroid.views.overlay.TilesOverlay(labelsProvider, this)
+        labelsOverlay.loadingBackgroundColor = android.graphics.Color.TRANSPARENT
+        labelsOverlay.loadingLineColor = android.graphics.Color.TRANSPARENT
+        binding.map.overlays.add(labelsOverlay)
 
         binding.trackButton.setOnClickListener {
             val code = binding.pairingCodeInput.text.toString().trim()
